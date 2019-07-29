@@ -1,18 +1,33 @@
 class Profile {
-    constructor(user) {
-        this.user = user;
+    constructor({username, name: {firstName, lastName}, password}) {
+        this.username = username;
+        this.name = {
+            firstName,
+            lastName
+        };
+        this.password = password;
     }
 
     createUser(callback) {
-        return ApiConnector.createUser(this.user, (err, data) => {
-            console.log(`Создан пользователь ${this.user.username}.`);
+        return ApiConnector.createUser(
+            {
+                username: this.username,
+                name: this.name,
+                password: this.password
+            }, (err, data) => {
+            console.log(`Создан пользователь ${this.username}.`);
             callback(err, data);
         });
     }
     
     performLogin(callback) {
-        return ApiConnector.createUser(this.user, (err, data) => {
-            console.log(`Создан пользователь ${this.username}.`);
+        return ApiConnector.createUser(
+            {
+                username: this.username,
+                name: this.name,
+                password: this.password 
+            }, (err, data) => {
+            console.log(`Пользователь ${this.username} авторизован.`);
             callback(err, data);
         });
     }
@@ -41,13 +56,14 @@ class Profile {
 
 const rateOfCurrency = (callback) => {
     return ApiConnector.getStocks((err, data) => {
-        console.log(`Произведен запрос курса валют.`);
+        console.log('Произведен запрос курса валют.');
         callback(err, data);
     });
 }
-
-//let resultRateOfCurrency = rateOfCurrency(callback);
-
+/*
+let resultRateOfCurrency = rateOfCurrency(callback);
+console.log(resultRateOfCurrency);
+*/
 function main() {
     const SerViktor = new Profile({
         username: 'SerViktor',
@@ -63,19 +79,26 @@ function main() {
 
     SerViktor.createUser((err, data) => {
         if (err) {
-            console.error(`Произошла ошибка при создании пользователя.`);
+            console.error('Произошла ошибка при создании пользователя.');
         }else {
-            console.log(`Создан пользователь ${this.user.username}.`)
+            console.log(`Создан пользователь ${SerViktor.username}.`)
         }    
     });
 
-/*
-    Ivan.addMoney({ currency: 'RUB', amount: 100 }, (err, data) => {
+    SerViktor.performLogin((err, data) => {
         if (err) {
-                console.error('Error during adding money to Ivan');
-        } else {
-                console.log(`Added 500000 euros to Ivan`);
-        });
-*/
+            console.error('Произошла ошибка при авторизации пользователя.');
+        }else {
+            console.log(`Пользователь ${SerViktor.username} авторизован.`)
+        }
+    });
+
+    SerViktor.addMoney({currency: 'RUB', amount: 100}, (err, data) => {
+        if (err) {
+            console.error('Произошла ошибка при зачислении средств.');
+        }else {
+            console.log(`Пользователь ${SerViktor.username} внес на счет ${amount} ${currency}.`);
+        }
+    });
 }
 main()
